@@ -21,6 +21,7 @@ if (Meteor.isClient) {
 
 }
 
+
 if (Meteor.isServer) {
   Meteor.startup(function () {
     Meteor.methods({
@@ -38,15 +39,28 @@ if (Meteor.isServer) {
     });
 
     if (Rocks.find({}).count() === 0) {
-      console.info('adding rocks via Meteor.Collection');
       // normal inserts
       Rocks.insert({name:'Obsidian', fromBulk:false});
       Rocks.insert({name:'Pumice', fromBulk:false});
 
-      console.info('adding rocks via MongoDB collection bulk operation');
+
       var bulkOp = Rocks.rawCollection().initializeUnorderedBulkOp();
-      bulkOp.insert({name:'Quartz', fromBulk:true});
-      bulkOp.insert({name:'Granite', fromBulk:true});
+
+      // these records work in meteor, explicitly set string _id and then we're good
+      bulkOp.insert({_id:Rocks._makeNewID(), name:'Quartz', fromBulk:true, usingMeteorId:true});
+      bulkOp.insert({_id:Rocks._makeNewID(), name:'Granite', fromBulk:true, usingMeteorId:true});
+
+      // Currently, when I try to use Mongo.ObjectID, I get this error in an infinite loop:
+      // Got exception while polling query:
+      // Error: Meteor does not currently support objects other than ObjectID as ids
+      // -- so the below documents are commented out
+      // bulkOp.insert({_id:new Mongo.ObjectID(), name:'Rhyolite', fromBulk:true, usingObjectID:true});
+      // bulkOp.insert({_id:new Mongo.ObjectID(), name:'Norite', fromBulk:true, usingObjectID:true});
+
+      // These documents don't seem to work with Meteor
+      bulkOp.insert({name:'Marble', fromBulk:true});
+      bulkOp.insert({name:'Flint', fromBulk:true});
+
 
       bulkOp.execute(function() {});
 
