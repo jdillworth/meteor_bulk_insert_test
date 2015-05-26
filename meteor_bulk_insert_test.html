@@ -1,0 +1,29 @@
+<head>
+  <title>meteor_bulk_insert_test</title>
+</head>
+
+<body>
+  <h1>Welcome to Meteor!</h1>
+
+  {{> rocklist}}
+</body>
+
+<template name="rocklist">
+  <h2>Bulk and non-bulk inserted rocks</h2>
+  <div>
+    Property Name:
+    <input type="text" name="key">
+    Property Value:
+    <input type="text" name="value">
+
+    <button id="set">Set This Property on All Rocks</button>
+  </div>
+  <p>
+    Notice the differences in the structure of _id below. Also, notice how trying to set a property
+    using the controls above doesn't work on all documents.
+  </p>
+  {{#each rocks}}
+    <h3>{{rock.name}}</h3>
+    <p>{{json}}</p>
+  {{/each}}
+</template>
